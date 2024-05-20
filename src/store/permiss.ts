@@ -6,6 +6,7 @@ interface ObjectList {
 
 export const usePermissStore = defineStore('permiss', {
     state: () => {
+        const token = localStorage.getItem('vuems_token');
         const defaultList: ObjectList = {
             admin: [
                 '0',
@@ -48,6 +49,7 @@ export const usePermissStore = defineStore('permiss', {
         const username = localStorage.getItem('vuems_name');
         console.log(username);
         return {
+            token,
             key: (username == 'admin' ? defaultList.admin : defaultList.user) as string[],
             defaultList,
         };

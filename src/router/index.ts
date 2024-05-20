@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { usePermissStore } from '../store/permiss';
 import Home from '../views/home.vue';
 import NProgress from 'nprogress';
@@ -268,6 +268,7 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
     history: createWebHashHistory(),
+    // history: createWebHistory(),
     routes,
 });
 
@@ -276,6 +277,7 @@ router.beforeEach((to, from, next) => {
     const role = localStorage.getItem('vuems_name');
     const permiss = usePermissStore();
 
+    console.log("没有权限", to);
     if (!role && to.meta.noAuth !== true) {
         next('/login');
     } else if (typeof to.meta.permiss == 'string' && !permiss.key.includes(to.meta.permiss)) {

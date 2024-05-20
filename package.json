@@ -9,6 +9,7 @@
 	},
 	"dependencies": {
 		"@element-plus/icons-vue": "*",
+		"@vueuse/core": "^10.9.0",
 		"@wangeditor/editor": "^5.1.23",
 		"@wangeditor/editor-for-vue": "^5.1.12",
 		"axios": "^1.6.3",
@@ -16,6 +17,7 @@
 		"echarts": "^5.5.0",
 		"echarts-wordcloud": "^2.1.0",
 		"element-plus": "^2.6.3",
+		"eslint": "^9.3.0",
 		"md-editor-v3": "^2.11.2",
 		"nprogress": "^0.2.0",
 		"pinia": "^2.1.7",

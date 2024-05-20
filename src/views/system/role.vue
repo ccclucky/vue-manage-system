@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts" name="system-role">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Role } from '@/types/role';
 import { fetchRoleData } from '@/api';
@@ -45,6 +45,7 @@ import TableDetail from '@/components/table-detail.vue';
 import RolePermission from './role-permission.vue'
 import { CirclePlusFilled } from '@element-plus/icons-vue';
 import { FormOption, FormOptionList } from '@/types/form-option';
+import { fetchAllRole } from '@/api/role';
 
 // 查询相关
 const query = reactive({
@@ -59,11 +60,10 @@ const handleSearch = () => {
 
 // 表格相关
 let columns = ref([
-    { type: 'index', label: '序号', width: 55, align: 'center' },
-    { prop: 'name', label: '角色名称' },
-    { prop: 'key', label: '角色标识' },
+    { prop: 'id', label: 'ID', width: 55, align: 'center' },
+    { prop: 'roleName', label: '角色名称' },
+    { prop: 'remark', label: '角色标识' },
     { prop: 'status', label: '状态' },
-    { prop: 'permissions', label: '权限管理' },
     { prop: 'operator', label: '操作', width: 250 },
 ])
 const page = reactive({
@@ -73,9 +73,11 @@ const page = reactive({
 })
 const tableData = ref<Role[]>([]);
 const getData = async () => {
-    const res = await fetchRoleData()
-    tableData.value = res.data.list;
-    page.total = res.data.pageTotal;
+    const res = await fetchAllRole()
+    console.log("------", res);
+    
+    tableData.value = res.content;
+    page.total = res.totalElements;
 };
 getData();
 const changePage = (val: number) => {

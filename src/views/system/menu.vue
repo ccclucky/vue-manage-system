@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="container">
-            <TableCustom :columns="columns" :tableData="menuData" row-key="index" :has-pagination="false"
+            <TableCustom :columns="columns" :tableData="menus" row-key="index" :has-pagination="false"
                 :viewFunc="handleView" :delFunc="handleDelete" :editFunc="handleEdit">
                 <template #toolbarBtn>
                     <el-button type="warning" :icon="CirclePlusFilled" @click="visible = true">新增</el-button>
@@ -36,22 +36,27 @@
 </template>
 
 <script setup lang="ts" name="system-menu">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { CirclePlusFilled } from '@element-plus/icons-vue';
-import { Menus } from '@/types/menu';
+import { Menu, Menus } from '@/types/menu';
 import TableCustom from '@/components/table-custom.vue';
 import TableDetail from '@/components/table-detail.vue';
 import { FormOption } from '@/types/form-option';
 import { menuData } from '@/components/menu';
+import { fetchMenuList } from '@/api/menu';
 
 // 表格相关
 let columns = ref([
-    { prop: 'title', label: '菜单名称', align: 'left' },
-    { prop: 'icon', label: '图标' },
-    { prop: 'index', label: '路由路径' },
-    { prop: 'permiss', label: '权限标识' },
+    { prop: 'name', label: '菜单名称', align: 'left' },
+    { prop: 'permit', label: '权限标识' },
+    { prop: 'pattern', label: '路由路径' },
     { prop: 'operator', label: '操作', width: 250 },
+    // { prop: 'title', label: '菜单名称', align: 'left' },
+    // { prop: 'icon', label: '图标' },
+    // { prop: 'index', label: '路由路径' },
+    // { prop: 'permiss', label: '权限标识' },
+    // { prop: 'operator', label: '操作', width: 250 },
 ])
 
 const getOptions = (data: any) => {
@@ -67,6 +72,13 @@ const getOptions = (data: any) => {
     })
 }
 const cascaderOptions = ref(getOptions(menuData));
+
+const menus = ref<Menu[]>()
+onMounted(async () => {
+    const menuList = await fetchMenuList();
+    menus.value = menuList;
+    console.log("====", menus.value);
+})
 
 
 // 新增/编辑弹窗相关

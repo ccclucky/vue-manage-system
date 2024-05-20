@@ -16,12 +16,8 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input
-                        type="password"
-                        placeholder="密码"
-                        v-model="param.password"
-                        @keyup.enter="submitForm(login)"
-                    >
+                    <el-input type="password" placeholder="密码" v-model="param.password"
+                        @keyup.enter="submitForm(login)">
                         <template #prepend>
                             <el-icon>
                                 <Lock />
@@ -50,6 +46,7 @@ import { usePermissStore } from '@/store/permiss';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
+import { fetchLogin } from '@/api/login';
 
 interface LoginInfo {
     username: string;
@@ -78,26 +75,48 @@ const rules: FormRules = {
 };
 const permiss = usePermissStore();
 const login = ref<FormInstance>();
-const submitForm = (formEl: FormInstance | undefined) => {
+const submitForm = async (formEl: FormInstance | undefined) => {
     if (!formEl) return;
-    formEl.validate((valid: boolean) => {
-        if (valid) {
-            ElMessage.success('登录成功');
-            localStorage.setItem('vuems_name', param.username);
-            const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
-            permiss.handleSet(keys);
-            router.push('/');
-            if (checked.value) {
-                localStorage.setItem('login-param', JSON.stringify(param));
-            } else {
-                localStorage.removeItem('login-param');
-            }
-        } else {
-            ElMessage.error('登录失败');
-            return false;
+
+    try {
+        const valid = await formEl.validate();
+        if (!valid) {
+            ElMessage.error('请填写完整的表单');
+            return;
         }
-    });
+
+        const token = await fetchLogin(param);
+        if (!token) {
+            ElMessage.error('用户名或密码错误');
+            console.error("Login error: ", token);
+            return;
+        }
+
+        // 认证成功逻辑
+        ElMessage.success('登录成功');
+        localStorage.setItem('vuems_name', param.username);
+
+        const keys = permiss.defaultList[param.username === 'admin' ? 'admin' : 'user'];
+        permiss.handleSet(keys);
+
+        localStorage.setItem('token', token);
+
+        router.push('/')
+            .then(() => console.log("成功跳转到首页"))
+            .catch(err => console.error("Router push error: ", err));
+
+        if (checked.value) {
+            localStorage.setItem('login-param', JSON.stringify(param));
+        } else {
+            localStorage.removeItem('login-param');
+        }
+    } catch (error) {
+        // 处理表单验证或登录请求中的异常
+        ElMessage.error('发生错误');
+        console.error("Error: ", error);
+    }
 };
+
 
 const tabs = useTabsStore();
 tabs.clearTabs();

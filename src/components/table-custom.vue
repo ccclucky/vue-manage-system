@@ -156,6 +156,9 @@ let {
     layout,
 } = toRefs(props)
 
+console.log("tableData", tableData.value);
+console.log("columns", columns.value);
+
 columns.value.forEach((item) => {
     if (item.visible === undefined) {
         item.visible = true

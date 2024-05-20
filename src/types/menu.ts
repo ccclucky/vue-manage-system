@@ -7,3 +7,10 @@ export interface Menus {
     permiss?: string;
     children?: Menus[];
 }
+
+export interface Menu {
+    id: string;
+    name?: string;
+    pattern?: string;
+    permit: string;
+}
